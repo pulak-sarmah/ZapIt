@@ -9,9 +9,9 @@ datasource db {
 
 model User {
   id              Int               @id @default(autoincrement())
-  email           String            @unique
-  password        String
-  name            String
+  email           String            @unique @db.VarChar(255)
+  password        String             @db.VarChar(255)
+  name            String             @db.VarChar(100)
   role            Role
   isActive        Boolean           @default(true)
   createdAt       DateTime          @default(now())
@@ -19,6 +19,8 @@ model User {
   Customer        Customer[]
   DeliveryPartner DeliveryPartner[]
   Admin           Admin[]
+
+  @@index([role])
 }
 
 model Customer {
@@ -26,23 +28,26 @@ model Customer {
   user           User         @relation(fields: [userId], references: [id])
   userId         Int
   role           Role         @default(CUSTOMER)
-  phone          String       @unique
+  phone          String       @unique @db.VarChar(15) 
   liveLocation   LiveLocation @relation(fields: [liveLocationId], references: [id])
-  address        String
+  address        String      @db.VarChar(255)
   liveLocationId Int
 }
 
 model DeliveryPartner {
-  id             Int          @id @default(autoincrement())
-  user           User         @relation(fields: [userId], references: [id])
+  id             Int                     @id @default(autoincrement())
+  user           User                    @relation(fields: [userId], references: [id])
   userId         Int
-  role           Role         @default(DELIVERYPARTNER)
-  phone          String       @unique
-  email          String       @unique
-  password       String
-  address        String
-  liveLocation   LiveLocation @relation(fields: [liveLocationId], references: [id])
+  role           Role                    @default(DELIVERYPARTNER)
+  phone          String                  @unique @db.VarChar(255)
+  email          String                  @unique @db.VarChar(255)
+  password       String                   @db.VarChar(255)
+  address        String                     @db.VarChar(255)
+  liveLocation   LiveLocation            @relation(fields: [liveLocationId], references: [id])
   liveLocationId Int
+  Branch         BranchDeliveryPartner[]
+
+  @@index([role])
 }
 
 model Admin {
@@ -50,8 +55,8 @@ model Admin {
   user     User   @relation(fields: [userId], references: [id])
   userId   Int
   role     Role   @default(ADMIN)
-  email    String @unique
-  password String
+  email    String @unique @db.VarChar(255)
+  password String @db.VarChar(255)
 }
 
 model LiveLocation {
@@ -60,10 +65,30 @@ model LiveLocation {
   longitude       Float
   Customer        Customer[]
   DeliveryPartner DeliveryPartner[]
+  Branch          Branch[]
 }
 
 enum Role {
   CUSTOMER
   ADMIN
   DELIVERYPARTNER
+}
+
+model Branch {
+  id              Int                     @id @default(autoincrement())
+  name            String          @db.VarChar(100)  
+  address         String        @db.VarChar(255)
+  liveLocation    LiveLocation            @relation(fields: [liveLocationId], references: [id])
+  liveLocationId  Int
+  deliveryPartner BranchDeliveryPartner[]
+
+  @@index([name])
+}
+
+model BranchDeliveryPartner {
+  id                Int             @id @default(autoincrement())
+  deliveryPartner   DeliveryPartner @relation(fields: [deliveryPartnerId], references: [id])
+  deliveryPartnerId Int
+  branch            Branch          @relation(fields: [branchId], references: [id])
+  branchId          Int
 }
