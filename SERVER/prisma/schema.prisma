@@ -7,56 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              Int               @id @default(autoincrement())
-  email           String            @unique @db.VarChar(255)
-  password        String             @db.VarChar(255)
-  name            String             @db.VarChar(100)
-  role            Role
-  isActive        Boolean           @default(true)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  Customer        Customer[]
-  DeliveryPartner DeliveryPartner[]
-  Admin           Admin[]
-
-  @@index([role])
-}
-
 model Customer {
   id             Int          @id @default(autoincrement())
-  user           User         @relation(fields: [userId], references: [id])
-  userId         Int
+  email          String       @unique @db.VarChar(255)
+  password       String       @db.VarChar(255)
+  name           String       @db.VarChar(100)
   role           Role         @default(CUSTOMER)
-  phone          String       @unique @db.VarChar(15) 
+  phone          String       @unique @db.VarChar(15)
   liveLocation   LiveLocation @relation(fields: [liveLocationId], references: [id])
-  address        String      @db.VarChar(255)
+  address        String       @db.VarChar(255)
   liveLocationId Int
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  Session        Session[]
 }
 
 model DeliveryPartner {
   id             Int                     @id @default(autoincrement())
-  user           User                    @relation(fields: [userId], references: [id])
-  userId         Int
+  email          String                  @unique @db.VarChar(255)
+  password       String                  @db.VarChar(255)
+  name           String                  @db.VarChar(100)
   role           Role                    @default(DELIVERYPARTNER)
   phone          String                  @unique @db.VarChar(255)
-  email          String                  @unique @db.VarChar(255)
-  password       String                   @db.VarChar(255)
-  address        String                     @db.VarChar(255)
+  address        String                  @db.VarChar(255)
   liveLocation   LiveLocation            @relation(fields: [liveLocationId], references: [id])
   liveLocationId Int
   Branch         BranchDeliveryPartner[]
-
-  @@index([role])
+  isActive       Boolean                 @default(true)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  Session        Session[]
 }
 
 model Admin {
-  id       Int    @id @default(autoincrement())
-  user     User   @relation(fields: [userId], references: [id])
-  userId   Int
-  role     Role   @default(ADMIN)
-  email    String @unique @db.VarChar(255)
-  password String @db.VarChar(255)
+  id        Int       @id @default(autoincrement())
+  email     String    @unique @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  name      String    @db.VarChar(100)
+  role      Role      @default(ADMIN)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Session   Session[]
 }
 
 model LiveLocation {
@@ -76,8 +69,8 @@ enum Role {
 
 model Branch {
   id              Int                     @id @default(autoincrement())
-  name            String          @db.VarChar(100)  
-  address         String        @db.VarChar(255)
+  name            String                  @db.VarChar(100)
+  address         String                  @db.VarChar(255)
   liveLocation    LiveLocation            @relation(fields: [liveLocationId], references: [id])
   liveLocationId  Int
   deliveryPartner BranchDeliveryPartner[]
@@ -91,4 +84,19 @@ model BranchDeliveryPartner {
   deliveryPartnerId Int
   branch            Branch          @relation(fields: [branchId], references: [id])
   branchId          Int
+}
+
+model Session {
+  id                String           @id @default(uuid())
+  sid               String           @unique
+  expiresAt         DateTime
+  data              String           @db.Text
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  Customer          Customer?        @relation(fields: [customerId], references: [id])
+  customerId        Int?
+  DeliveryPartner   DeliveryPartner? @relation(fields: [deliveryPartnerId], references: [id])
+  deliveryPartnerId Int?
+  Admin             Admin?           @relation(fields: [adminId], references: [id])
+  adminId           Int?
 }

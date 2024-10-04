@@ -1,15 +1,35 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "lib": ["ES2020"],
+    "baseUrl": ".",
+    "target": "ESNext",
+    "jsx": "react",
+    "lib": ["ESNext"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": false,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "strictPropertyInitialization": false,
+    "incremental": true,
+    "resolveJsonModule": true,
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/config/adminSetup.mjs",
+    "src/app.ts",
+    "src/server.js",
+    "src/server.js",
+    "src/server.mts",
+    "src/config/authConfig.mjs",
+    "src/config/session.mjs"
+  ],
   "exclude": ["node_modules", "dist"]
 }

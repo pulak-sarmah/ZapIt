@@ -20,6 +20,7 @@ const PORT = process.env.PORT || 3000;
 const start = async () => {
   try {
     await server.listen({ port: PORT as number });
+
     logger.info(`Server is running on http://localhost:${PORT}`);
   } catch (err) {
     server.log.error(err);
